@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>岗位申请</h1>
+<p class="muted">学生提交岗位信息后,需学院核对培养要求、单位联系人确认职责,再进入电子签署。</p>
+<form method="post" class="form panel">
+  <label>实习岗位
+    <select name="position_id" required>
+      {% for p in positions %}
+      <option value="{{ p.id }}">{{ p.unit_name }} · {{ p.title }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>指导老师(本学院)
+    <select name="teacher_id" required>
+      {% for t in teachers %}
+      <option value="{{ t.id }}">{{ t.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>开始日期 <input type="date" name="start_date" required></label>
+  <label>结束日期 <input type="date" name="end_date" required></label>
+  <button class="btn primary" type="submit">提交申请</button>
+</form>
+{% endblock %}

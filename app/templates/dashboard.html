@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>签署进度</h1>
+<p class="muted">按学生、学院、单位三方展示每条申请的签署/确认状态。</p>
+<table class="tbl">
+  <thead>
+    <tr>
+      <th>申请</th><th>学生</th><th>学院</th><th>单位 / 岗位</th>
+      <th>当前版本</th><th>学生</th><th>学院</th><th>单位</th>
+      <th>申请状态</th><th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for row in rows %}
+    {% set app = row.app %}
+    {% set ag = row.agreement %}
+    <tr>
+      <td>APP-{{ app.id }}</td>
+      <td>{{ app.student_name }}</td>
+      <td>{{ app.college_name }}</td>
+      <td>{{ app.unit_name }} · {{ app.position_title }}</td>
+      <td>
+        {% if ag %}第 {{ ag.version }} 版<span class="muted">({{ CHANGE_LABEL[ag.change_type] }})</span>
+        {% else %}<span class="muted">未生成</span>{% endif %}
+      </td>
+      {% for party in ['student', 'college', 'unit'] %}
+      <td>
+        {% if ag and ag.status == 'change_pending' %}
+          {% set st = row.confs.get(party, '—') %}
+          {% if st == 'confirmed' %}<span class="chip ok">已确认</span>
+          {% elif st == 'pending' %}<span class="chip wait">待确认</span>
+          {% else %}<span class="chip na">发起方</span>{% endif %}
+        {% elif ag %}
+          {% set st = row.sigs.get(party) %}
+          {% if st == 'signed' %}<span class="chip ok">已签</span>
+          {% elif st == 'pending' %}<span class="chip wait">待签</span>
+          {% else %}<span class="chip na">—</span>{% endif %}
+        {% else %}<span class="chip na">—</span>{% endif %}
+      </td>
+      {% endfor %}
+      <td><span class="status">{{ APP_STATUS_LABEL[app.status] }}</span></td>
+      <td><a href="{{ url_for('detail', app_id=app.id) }}">详情</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

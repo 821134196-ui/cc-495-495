@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}实习三方协议平台{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="{{ url_for('dashboard') }}">实习三方协议平台</a>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">签署进度</a>
+      <a href="{{ url_for('apply') }}">岗位申请</a>
+      <a href="{{ url_for('todo') }}">指导老师待办</a>
+      <a href="{{ url_for('archive') }}">协议归档</a>
+      <a href="{{ url_for('notifications') }}">通知{% if unread %}<span class="badge">{{ unread }}</span>{% endif %}</a>
+    </nav>
+    <form class="user-switch" method="post" action="{{ url_for('switch_user') }}">
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <select name="user" onchange="this.form.submit()">
+        {% if not cu %}<option value="" selected>选择身份…</option>{% endif %}
+        <optgroup label="学生">
+          {% for u in users.students %}
+          <option value="student:{{ u.id }}" {{ 'selected' if cu and cu.role=='student' and cu.id==u.id }}>
+            {{ u.name }}({{ u.college_name }})</option>
+          {% endfor %}
+        </optgroup>
+        <optgroup label="指导老师">
+          {% for u in users.teachers %}
+          <option value="teacher:{{ u.id }}" {{ 'selected' if cu and cu.role=='teacher' and cu.id==u.id }}>
+            {{ u.name }}({{ u.college_name }})</option>
+          {% endfor %}
+        </optgroup>
+        <optgroup label="单位联系人">
+          {% for u in users.contacts %}
+          <option value="contact:{{ u.id }}" {{ 'selected' if cu and cu.role=='contact' and cu.id==u.id }}>
+            {{ u.name }}({{ u.unit_name }}){{ '' if u.active else '·已停用' }}</option>
+          {% endfor %}
+        </optgroup>
+      </select>
+    </form>
+  </div>
+</header>
+<main class="wrap">
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, m in msgs %}
+      <div class="flash {{ cat }}">{{ m }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="wrap footer">虚构演示系统 · 协议文件与签名均由模拟适配器生成</footer>
+</body>
+</html>

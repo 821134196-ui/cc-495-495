@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>协议归档</h1>
+<p class="muted">全部协议版本按申请归档,附件保留清晰版本号;点击“查看”阅读完整协议文本。</p>
+{% for g in groups %}
+<section class="panel">
+  <h2>APP-{{ g.app.id }} · {{ g.app.student_name }} · {{ g.app.unit_name }}({{ g.app.position_title }})</h2>
+  <table class="tbl">
+    <thead><tr><th>版本</th><th>类型</th><th>状态</th><th>周期</th><th>附件</th><th>生效时间</th><th>文件</th></tr></thead>
+    <tbody>
+      {% for ag in g.versions %}
+      <tr>
+        <td>第 {{ ag.version }} 版</td>
+        <td>{{ CHANGE_LABEL[ag.change_type] }}</td>
+        <td><span class="chip {{ 'ok' if ag.status=='effective' else ('wait' if ag.status in ['signing','change_pending'] else 'na') }}">{{ AGREEMENT_STATUS_LABEL[ag.status] }}</span></td>
+        <td>{{ ag.start_date }} ~ {{ ag.end_date }}</td>
+        <td>
+          第 {{ ag.attachment_version }} 版
+          <a href="{{ url_for('files', relpath='attachments/APP-%d-att-v%d.txt' % (g.app.id, ag.attachment_version)) }}">下载</a>
+        </td>
+        <td>{{ ag.effective_at or '—' }}</td>
+        <td>
+          <a href="{{ url_for('agreement_file', ag_id=ag.id) }}">查看</a>
+          {% if ag.file_path %} · <a href="{{ url_for('files', relpath=ag.file_path) }}">下载</a>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if g.versions|length > 1 %}
+  <a href="{{ url_for('compare', app_id=g.app.id) }}">对比版本差异 →</a>
+  {% endif %}
+</section>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>发起变更:{{ CHANGE_LABEL[change_type] }}</h1>
+<p class="muted">
+  当前生效版本:第 {{ cur.version }} 版({{ cur.start_date }} ~ {{ cur.end_date }})。
+  变更确认通过后,新版本自确认之日起接续生效,实习天数分段连续记录。
+</p>
+<form method="post" class="form panel">
+  {% if change_type in ['withdrawal', 'transfer'] %}
+  <label>新岗位(不选则{% if change_type == 'withdrawal' %}实习随撤岗结束{% else %}保持原岗位{% endif %})
+    <select name="new_position_id">
+      <option value="">— 不更换 —</option>
+      {% for p in positions %}
+      <option value="{{ p.id }}">{{ p.unit_name }} · {{ p.title }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>新结束日期(可选)
+    <input type="date" name="new_end_date">
+  </label>
+  {% elif change_type == 'early_end' %}
+  <label>提前结束日期(必须早于原结束日期 {{ cur.end_date }})
+    <input type="date" name="new_end_date" required>
+  </label>
+  {% elif change_type == 'contact_change' %}
+  <label>新单位联系人
+    <select name="new_contact_id" required>
+      {% for c in contacts %}
+      <option value="{{ c.id }}">{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  {% elif change_type == 'attachment_fix' %}
+  <p class="muted">提交后附件版本号自动 +1(当前第 {{ cur.attachment_version }} 版),并生成新的附件文件。</p>
+  {% endif %}
+  <label>变更原因
+    <textarea name="reason" rows="3" placeholder="说明变更背景,将写入协议版本记录"></textarea>
+  </label>
+  <button class="btn primary" type="submit">提交变更,等待受影响方确认</button>
+</form>
+{% endblock %}

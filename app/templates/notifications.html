@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>通知</h1>
+{% if rows %}
+<table class="tbl">
+  <thead><tr><th>时间</th><th>内容</th></tr></thead>
+  <tbody>
+    {% for n in rows %}
+    <tr class="{{ 'unread' if not n.read }}"><td>{{ n.created_at }}</td><td>{{ n.message }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">暂无通知。</p>
+{% endif %}
+{% endblock %}

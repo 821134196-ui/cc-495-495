@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>协议 APP-{{ ag.application_id }}-V{{ ag.version }} · {{ CHANGE_LABEL[ag.change_type] }}
+  <span class="chip {{ 'ok' if ag.status=='effective' else ('wait' if ag.status in ['signing','change_pending'] else 'na') }}">{{ AGREEMENT_STATUS_LABEL[ag.status] }}</span>
+</h1>
+<div class="doc-wrap">
+  <pre class="doc">{{ content }}</pre>
+</div>
+<p>
+  {% if ag.file_path %}<a class="btn" href="{{ url_for('files', relpath=ag.file_path) }}">下载协议文件</a>{% endif %}
+  <a class="btn" href="{{ url_for('detail', app_id=ag.application_id) }}">返回申请详情</a>
+</p>
+{% endblock %}

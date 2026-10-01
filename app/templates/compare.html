@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>变更对比 · APP-{{ app_id }}</h1>
+<form method="get" class="inline-form pick">
+  <label>旧版本
+    <select name="old">
+      {% for v in versions %}
+      <option value="{{ v.id }}" {{ 'selected' if v.id == old.id }}>第 {{ v.version }} 版({{ CHANGE_LABEL[v.change_type] }})</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>新版本
+    <select name="new">
+      {% for v in versions %}
+      <option value="{{ v.id }}" {{ 'selected' if v.id == new.id }}>第 {{ v.version }} 版({{ CHANGE_LABEL[v.change_type] }})</option>
+      {% endfor %}
+    </select>
+  </label>
+  <button class="btn" type="submit">对比</button>
+</form>
+
+<div class="compare-head">
+  <div></div>
+  <div class="ver old">第 {{ old.version }} 版<span class="chip na">{{ AGREEMENT_STATUS_LABEL[old.status] }}</span></div>
+  <div class="ver new">第 {{ new.version }} 版<span class="chip {{ 'ok' if new.status=='effective' else 'wait' }}">{{ AGREEMENT_STATUS_LABEL[new.status] }}</span></div>
+</div>
+<table class="tbl compare">
+  <tbody>
+    {% for r in rows %}
+    <tr class="{{ 'changed' if r.changed }}">
+      <th>{{ r.field }}</th>
+      <td>{{ r.old }}</td>
+      <td>{{ r.new }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if new.change_reason %}
+<p class="panel">变更原因:{{ new.change_reason }}</p>
+{% endif %}
+<p><a href="{{ url_for('detail', app_id=app_id) }}">← 返回申请详情</a></p>
+{% endblock %}

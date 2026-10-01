@@ -1,0 +1,123 @@
+:root {
+  --ink: #2e3338;        /* 深灰正文 */
+  --ink-soft: #5b636b;   /* 次级文字 */
+  --line: #e3e6ea;       /* 分隔线 */
+  --blue: #1f5fbf;       /* 校园蓝 */
+  --blue-soft: #eaf1fb;  /* 浅蓝底 */
+  --danger: #b3372f;
+  --bg: #ffffff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.65 "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 22px; margin: 22px 0 6px; }
+h2 { font-size: 16px; margin: 0 0 10px; }
+.muted { color: var(--ink-soft); }
+code { background: #f2f4f6; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+
+/* 顶栏 */
+.topbar { background: var(--ink); color: #fff; }
+.topbar .wrap { display: flex; align-items: center; gap: 26px; height: 54px; }
+.brand { color: #fff; font-weight: 700; font-size: 17px; }
+.brand:hover { text-decoration: none; }
+.topbar nav { display: flex; gap: 18px; flex: 1; }
+.topbar nav a { color: #cfd6dd; font-size: 14px; }
+.topbar nav a:hover { color: #fff; text-decoration: none; }
+.badge {
+  display: inline-block; background: var(--blue); color: #fff; border-radius: 9px;
+  font-size: 11px; padding: 0 6px; margin-left: 4px;
+}
+.user-switch select {
+  background: #3a4046; color: #fff; border: 1px solid #4a5158;
+  border-radius: 6px; padding: 5px 8px; font-size: 13px; max-width: 230px;
+}
+
+/* 面板与表格 */
+.panel {
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px 18px; margin: 14px 0; background: #fff;
+}
+.panel.action { border-left: 4px solid var(--blue); background: #fbfdff; }
+.tbl { width: 100%; border-collapse: collapse; margin: 8px 0; }
+.tbl th, .tbl td {
+  text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line);
+  font-size: 14px; vertical-align: top;
+}
+.tbl th { color: var(--ink-soft); font-weight: 600; white-space: nowrap; }
+.tbl tr.total td { font-weight: 700; background: var(--blue-soft); }
+.tbl.small td, .tbl.small th { font-size: 13px; padding: 5px 8px; }
+
+/* 状态签 */
+.chip {
+  display: inline-block; border-radius: 20px; padding: 1px 10px;
+  font-size: 12.5px; margin: 1px 2px; white-space: nowrap;
+}
+.chip.ok { background: var(--blue); color: #fff; }
+.chip.wait { background: #fff; color: var(--ink-soft); border: 1px solid #c8ced4; }
+.chip.na { background: #f0f2f4; color: var(--ink-soft); }
+.status { font-size: 13px; color: var(--blue); font-weight: 600; }
+.ok-text { color: var(--blue); font-weight: 600; }
+.err-text { color: var(--danger); font-weight: 600; }
+
+/* 表单 */
+.form label { display: block; margin: 12px 0; font-weight: 600; }
+.form input, .form select, .form textarea, .inline-form input, .inline-form select {
+  display: block; width: 100%; margin-top: 4px; padding: 8px 10px;
+  border: 1px solid #c8ced4; border-radius: 6px; font-size: 14px; font-weight: 400;
+}
+.form { max-width: 560px; }
+.inline-form { display: flex; gap: 10px; align-items: center; }
+.inline-form input, .inline-form select { width: auto; display: inline-block; }
+.inline-form.pick { margin: 10px 0 16px; }
+.inline-form.pick label { font-size: 13px; color: var(--ink-soft); }
+.btn {
+  display: inline-block; border: 1px solid #c8ced4; background: #fff; color: var(--ink);
+  border-radius: 6px; padding: 7px 16px; font-size: 14px; cursor: pointer;
+}
+.btn:hover { border-color: var(--blue); color: var(--blue); text-decoration: none; }
+.btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+.btn.primary:hover { background: #1a51a8; }
+.btn.danger { color: var(--danger); border-color: var(--danger); }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* 提示 */
+.flash {
+  border: 1px solid var(--blue); background: var(--blue-soft); color: var(--ink);
+  border-radius: 8px; padding: 9px 14px; margin: 12px 0 0; font-size: 14px;
+}
+.flash.error { border-color: var(--danger); background: #fbeeed; }
+
+/* 信息网格 */
+dl.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 30px; margin: 0; }
+dl.grid dt { color: var(--ink-soft); font-size: 13px; }
+dl.grid dd { margin: 0; font-weight: 600; }
+
+/* 变更对比 */
+.compare-head {
+  display: grid; grid-template-columns: 140px 1fr 1fr; gap: 0;
+  margin-bottom: 0; font-weight: 700;
+}
+.compare-head .ver { padding: 10px; border-bottom: 2px solid var(--line); }
+.compare-head .ver.new { color: var(--blue); }
+.compare-head .ver .chip { margin-left: 8px; font-weight: 400; }
+.tbl.compare th { width: 140px; }
+.tbl.compare tr.changed td { background: var(--blue-soft); font-weight: 600; }
+.tbl.compare tr.changed td:last-child { color: var(--blue); }
+
+/* 协议全文:独立宽版阅读区,不塞进小卡片 */
+.doc-wrap {
+  border: 1px solid var(--line); border-radius: 10px; background: #fcfcfd;
+  margin: 14px 0; padding: 28px 36px;
+}
+pre.doc {
+  font: 14px/1.9 "PingFang SC", "Microsoft YaHei", sans-serif;
+  white-space: pre-wrap; margin: 0; color: var(--ink);
+}
+
+tr.unread td { font-weight: 600; }
+.footer { color: var(--ink-soft); font-size: 12.5px; padding: 26px 20px; }

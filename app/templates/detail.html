@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>申请 APP-{{ app.id }} <span class="status">{{ APP_STATUS_LABEL[app.status] }}</span></h1>
+
+<section class="panel">
+  <h2>基本信息</h2>
+  <dl class="grid">
+    <div><dt>学生</dt><dd>{{ app.student_name }}({{ app.student_no }})</dd></div>
+    <div><dt>学院</dt><dd>{{ app.college_name }}</dd></div>
+    <div><dt>申请周期</dt><dd>{{ app.start_date }} ~ {{ app.end_date }}</dd></div>
+    <div><dt>审核意见</dt><dd>{{ app.review_note or '—' }}</dd></div>
+  </dl>
+</section>
+
+{% if actions.review %}
+<section class="panel action">
+  <h2>学院审核(核对培养要求)</h2>
+  <form method="post" action="{{ url_for('review', app_id=app.id) }}" class="inline-form">
+    <input type="text" name="note" placeholder="审核意见(驳回时必填)">
+    <button class="btn primary" name="decision" value="approve">通过</button>
+    <button class="btn danger" name="decision" value="reject">驳回</button>
+  </form>
+</section>
+{% endif %}
+
+{% if actions.unit_confirm %}
+<section class="panel action">
+  <h2>单位确认</h2>
+  <p class="muted">确认岗位职责与接收条件后,将生成三方协议第 1 版并进入电子签署。</p>
+  <form method="post" action="{{ url_for('unit_confirm', app_id=app.id) }}">
+    <button class="btn primary">确认岗位职责,生成协议</button>
+  </form>
+</section>
+{% endif %}
+
+{% if actions.sign %}
+<section class="panel action">
+  <h2>电子签署(第 {{ actions.sign.version }} 版)</h2>
+  {% if actions.sign.turn %}
+  <form method="post" action="{{ url_for('sign', ag_id=actions.sign.agreement_id) }}">
+    <button class="btn primary">以{{ PARTY_LABEL[actions.sign.party] }}身份签署</button>
+  </form>
+  {% else %}
+  <p class="muted">签署顺序为 学生 → 学院 → 单位,请等待前序方先签署。</p>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if actions.confirm_change %}
+<section class="panel action">
+  <h2>变更确认(第 {{ actions.confirm_change.version }} 版)</h2>
+  <p class="muted">该变更影响你方权益,确认后新版本生效、旧版本同时失效。</p>
+  <form method="post" action="{{ url_for('confirm_change', ag_id=actions.confirm_change.agreement_id) }}">
+    <button class="btn primary">确认变更</button>
+  </form>
+</section>
+{% endif %}
+
+{% if actions.changes %}
+<section class="panel action">
+  <h2>发起变更</h2>
+  <p class="muted">对已生效协议的变更会生成新版本,需受影响方重新确认。</p>
+  <div class="btn-row">
+    {% for ctype, label in actions.changes %}
+    <a class="btn" href="{{ url_for('change', app_id=app.id, change_type=ctype) }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="panel">
+  <h2>协议版本链</h2>
+  {% if versions %}
+  <table class="tbl">
+    <thead><tr><th>版本</th><th>类型</th><th>状态</th><th>周期</th><th>附件</th>
+      <th>签署 / 确认</th><th>文件</th></tr></thead>
+    <tbody>
+    {% for vd in versions %}
+      {% set ag = vd.agreement %}
+      <tr>
+        <td>第 {{ ag.version }} 版</td>
+        <td>{{ CHANGE_LABEL[ag.change_type] }}</td>
+        <td><span class="chip {{ 'ok' if ag.status=='effective' else ('wait' if ag.status in ['signing','change_pending'] else 'na') }}">{{ AGREEMENT_STATUS_LABEL[ag.status] }}</span></td>
+        <td>{{ ag.start_date }} ~ {{ ag.end_date }}</td>
+        <td>第 {{ ag.attachment_version }} 版</td>
+        <td>
+          {% for s in vd.sigs %}
+            <span class="chip {{ 'ok' if s.status=='signed' else 'wait' }}"
+                  title="{{ s.signer_name }} {{ s.signed_at or '' }}">
+              {{ PARTY_LABEL[s.party] }}{{ '已签' if s.status=='signed' else '待签' }}</span>
+          {% endfor %}
+          {% for c in vd.confs %}
+            <span class="chip {{ 'ok' if c.status=='confirmed' else 'wait' }}">
+              {{ PARTY_LABEL[c.party] }}{{ '已确认' if c.status=='confirmed' else '待确认' }}</span>
+          {% endfor %}
+        </td>
+        <td>
+          <a href="{{ url_for('agreement_file', ag_id=ag.id) }}">查看协议</a>
+          {% if ag.file_path %} · <a href="{{ url_for('files', relpath=ag.file_path) }}">下载</a>{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if versions|length > 1 %}
+  <p><a href="{{ url_for('compare', app_id=app.id) }}">对比相邻版本差异 →</a></p>
+  {% endif %}
+  {% else %}
+  <p class="muted">单位确认后生成协议第 1 版。</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <h2>实习天数台账</h2>
+  {% if ledger.segments %}
+  <table class="tbl">
+    <thead><tr><th>协议版本</th><th>开始</th><th>结束</th><th>天数</th></tr></thead>
+    <tbody>
+      {% for s in ledger.segments %}
+      <tr><td>第 {{ s.version }} 版</td><td>{{ s.start_date }}</td><td>{{ s.end_date }}</td>
+        <td>{{ s.days }} 天</td></tr>
+      {% endfor %}
+      <tr class="total"><td colspan="3">累计(含在途)</td><td>{{ ledger.total_days }} 天</td></tr>
+    </tbody>
+  </table>
+  {% if ledger.continuous %}
+  <p class="ok-text">✓ 变更前后各段首尾相接,天数连续可查</p>
+  {% else %}
+  <p class="err-text">⚠ 分段存在断档或重叠,请核查</p>
+  {% endif %}
+  {% else %}
+  <p class="muted">协议生效后开始记录实习天数。</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <h2>操作留痕</h2>
+  <table class="tbl small">
+    <thead><tr><th>时间</th><th>操作人</th><th>动作</th><th>说明</th></tr></thead>
+    <tbody>
+    {% for t in trail %}
+      <tr><td>{{ t.created_at }}</td><td>{{ t.actor }}</td>
+        <td><code>{{ t.action }}</code></td><td>{{ t.detail }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

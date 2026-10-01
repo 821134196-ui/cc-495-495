@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>指导老师待办 · {{ todo.teacher.name }}</h1>
+
+<section class="panel">
+  <h2>待审核申请(本学院)</h2>
+  {% if todo.reviews %}
+  <table class="tbl">
+    <thead><tr><th>申请</th><th>学生</th><th>岗位</th><th>周期</th><th></th></tr></thead>
+    <tbody>
+      {% for a in todo.reviews %}
+      <tr><td>APP-{{ a.id }}</td><td>{{ a.student_name }}</td><td>{{ a.position_title }}</td>
+        <td>{{ a.start_date }} ~ {{ a.end_date }}</td>
+        <td><a href="{{ url_for('detail', app_id=a.id) }}">去审核</a></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">没有待审核的申请。</p>{% endif %}
+</section>
+
+<section class="panel">
+  <h2>待学院签署</h2>
+  {% if todo.signs %}
+  <table class="tbl">
+    <thead><tr><th>协议</th><th>学生</th><th>类型</th><th></th></tr></thead>
+    <tbody>
+      {% for ag in todo.signs %}
+      <tr><td>APP-{{ ag.application_id }}-V{{ ag.version }}</td><td>{{ ag.student_name }}</td>
+        <td>{{ CHANGE_LABEL[ag.change_type] }}</td>
+        <td><a href="{{ url_for('detail', app_id=ag.application_id) }}">去签署</a></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">没有待签署的协议。</p>{% endif %}
+</section>
+
+<section class="panel">
+  <h2>待确认变更</h2>
+  {% if todo.confirms %}
+  <table class="tbl">
+    <thead><tr><th>协议</th><th>学生</th><th>变更类型</th><th></th></tr></thead>
+    <tbody>
+      {% for ag in todo.confirms %}
+      <tr><td>APP-{{ ag.application_id }}-V{{ ag.version }}</td><td>{{ ag.student_name }}</td>
+        <td>{{ CHANGE_LABEL[ag.change_type] }}</td>
+        <td><a href="{{ url_for('detail', app_id=ag.application_id) }}">去确认</a></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">没有待确认的变更。</p>{% endif %}
+</section>
+{% endblock %}
