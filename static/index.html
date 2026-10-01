@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>实习三方协议管理</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">实</span>
+    <div>
+      <h1>实习三方协议管理</h1>
+      <p class="muted">岗位申请 · 三方签署 · 变更留痕 · 协议归档</p>
+    </div>
+  </div>
+  <label class="actor-switch">
+    当前身份
+    <select id="actorSelect"></select>
+  </label>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="apply" class="active">岗位申请</button>
+  <button data-tab="sign">三方签署</button>
+  <button data-tab="change">变更对比</button>
+  <button data-tab="todo">老师待办 <span class="pill" id="todoCount" hidden></span></button>
+  <button data-tab="archive">协议归档</button>
+</nav>
+
+<main>
+  <section id="tab-apply" class="tab-panel active"></section>
+  <section id="tab-sign" class="tab-panel"></section>
+  <section id="tab-change" class="tab-panel"></section>
+  <section id="tab-todo" class="tab-panel"></section>
+  <section id="tab-archive" class="tab-panel"></section>
+</main>
+
+<div class="modal-mask" id="modalMask" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <strong id="modalTitle">协议全文</strong>
+      <button class="btn ghost" id="modalClose">关闭</button>
+    </div>
+    <pre id="modalBody" class="agreement-full"></pre>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/app.js"></script>
+</body>
+</html>
